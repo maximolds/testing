@@ -1,0 +1,26 @@
+# Base image
+FROM ubuntu:20.04
+
+# Install necessary packages
+RUN apt-get update && apt-get install -y \
+    bash \
+    ttyd \
+    apache2-utils \
+    && apt-get clean
+
+# Create app directory
+WORKDIR /app
+
+# Copy script and assets
+COPY shift_sched.sh /app/shift_sched.sh
+COPY assets /app/assets
+
+# Make script executable
+RUN chmod +x /app/shift_sched.sh
+RUN chmod +x /app/assets/*
+
+# Expose port for ttyd
+EXPOSE 8080
+
+# Run the script using ttyd
+CMD ["ttyd", "--writable", "-p", "8080", "bash", "./shift_sched.sh"]
